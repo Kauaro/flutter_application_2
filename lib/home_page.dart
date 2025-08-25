@@ -1,216 +1,262 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
+
+  final List<Map<String, dynamic>> campaigns = [
+    {
+      'title': 'NO TO RACISM',
+      'image': 'nao_racismo.jpg',
+      'backgroundColor': const Color(0xFFF5F5DC), // Bege claro
+      'textColor': Colors.black,
+      'topText': 'NO',
+      'bottomText': 'TO RACISM',
+    },
+    {
+      'title': 'STOP HOMOPHOBIA',
+      'image': 'nao_homofobia.jpg',
+      'backgroundColor': Colors.transparent, // Bandeira do arco-íris
+      'textColor': Colors.white,
+      'topText': 'STOP',
+      'bottomText': 'HOMOPHOBIA',
+    },
+    {
+      'title': 'STOP FEMINICIDE',
+      'image': 'nao_femicidio.webp',
+      'backgroundColor': const Color(0xFF8B0000), // Vermelho escuro
+      'textColor': Colors.white,
+      'topText': 'STOP',
+      'bottomText': 'FEMINICIDE',
+    },
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    // Configurar status bar
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Página Principal'),
-        backgroundColor: const Color(0xFF5e17eb),
-        foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.login),
-            onPressed: () {
-              Navigator.pushNamed(context, '/login');
-            },
-            tooltip: 'Fazer Login',
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+      backgroundColor: Colors.white,
+      body: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header com boas-vindas
+            // Status Bar personalizada
             Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF5e17eb), Color(0xFF7c3aed)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Icon(
-                    Icons.home,
-                    size: 40,
-                    color: Colors.white,
-                  ),
-                  SizedBox(height: 12),
-                  Text(
-                    'Bem-vindo ao App!',
+                  const Text(
+                    '9:41',
                     style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF5e17eb),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.person,
+                      size: 16,
                       color: Colors.white,
                     ),
                   ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Explore as funcionalidades disponíveis',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white70,
-                    ),
-                  ),
                 ],
               ),
             ),
             
-            const SizedBox(height: 24),
-            
-            // Seção de funcionalidades
-            const Text(
-              'Funcionalidades',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF5e17eb),
-              ),
-            ),
-            const SizedBox(height: 16),
-            
-            // Grid de cards de funcionalidades
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              childAspectRatio: 1.2,
-              children: [
-                _buildFeatureCard(
-                  context,
-                  icon: Icons.school,
-                  title: 'Cursos',
-                  subtitle: 'Acesse seus cursos',
-                  onTap: () => _showFeatureDialog(context, 'Cursos'),
-                ),
-                _buildFeatureCard(
-                  context,
-                  icon: Icons.assignment,
-                  title: 'Atividades',
-                  subtitle: 'Veja suas tarefas',
-                  onTap: () => _showFeatureDialog(context, 'Atividades'),
-                ),
-                _buildFeatureCard(
-                  context,
-                  icon: Icons.calendar_today,
-                  title: 'Calendário',
-                  subtitle: 'Eventos e datas',
-                  onTap: () => _showFeatureDialog(context, 'Calendário'),
-                ),
-                _buildFeatureCard(
-                  context,
-                  icon: Icons.person,
-                  title: 'Perfil',
-                  subtitle: 'Suas informações',
-                  onTap: () => _showFeatureDialog(context, 'Perfil'),
-                ),
-              ],
-            ),
-            
-            const SizedBox(height: 24),
-            
-            // Seção de informações
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.grey[50],
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey[200]!),
-              ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Informações',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF5e17eb),
+            // Conteúdo principal
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Título "Campaigns"
+                    const Text(
+                      'Campaigns',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF5e17eb),
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 12),
-                  Text(
-                    '• Faça login para acessar funcionalidades exclusivas\n'
-                    '• Mantenha seus dados atualizados\n'
-                    '• Entre em contato em caso de dúvidas',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                      height: 1.5,
+                    const SizedBox(height: 20),
+                    
+                    // Carrossel de campanhas
+                    SizedBox(
+                      height: 200,
+                      child: PageView.builder(
+                        controller: _pageController,
+                        onPageChanged: (index) {
+                          setState(() {
+                            _currentPage = index;
+                          });
+                        },
+                        itemCount: campaigns.length,
+                        itemBuilder: (context, index) {
+                          final campaign = campaigns[index];
+                          return Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 8),
+                            decoration: BoxDecoration(
+                              color: campaign['backgroundColor'],
+                              borderRadius: BorderRadius.circular(16),
+                              image: campaign['image'] == 'nao_homofobia.jpg' 
+                                ? const DecorationImage(
+                                    image: AssetImage('nao_homofobia.jpg'),
+                                    fit: BoxFit.cover,
+                                  )
+                                : null,
+                            ),
+                            child: campaign['image'] == 'nao_homofobia.jpg'
+                              ? _buildRainbowOverlay(campaign)
+                              : _buildCampaignCard(campaign),
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                ],
+                    
+                    // Indicadores de página
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(
+                        campaigns.length,
+                        (index) => Container(
+                          width: 8,
+                          height: 8,
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: index == _currentPage
+                                ? const Color(0xFF5e17eb)
+                                : Colors.grey[300],
+                          ),
+                        ),
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 32),
+                    
+                    // Seção de texto
+                    const Text(
+                      'Campaigns',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF5e17eb),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'O Projeto SLA é uma feira cultural que promove a reflexão e o enfrentamento de questões sociais como racismo, homofobia, xenofobia e preconceito religioso. Com uma abordagem prática e educativa, os alunos se tornam protagonistas, desenvolvendo projetos interdisciplinares que transformam as salas de aula em espaços de conscientização.',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey,
+                        height: 1.5,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/login');
-        },
-        backgroundColor: const Color(0xFF5e17eb),
-        foregroundColor: Colors.white,
-        child: const Icon(Icons.login),
+      floatingActionButton: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        child: FloatingActionButton.extended(
+          onPressed: () {
+            // Ação do botão QR code
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Funcionalidade QR Code em desenvolvimento'),
+                backgroundColor: Color(0xFF5e17eb),
+              ),
+            );
+          },
+          backgroundColor: const Color(0xFF5e17eb),
+          foregroundColor: Colors.white,
+          icon: const Icon(Icons.qr_code),
+          label: const Text('QR Code'),
+        ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
-  Widget _buildFeatureCard(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-  }) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+  Widget _buildCampaignCard(Map<String, dynamic> campaign) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        image: DecorationImage(
+          image: AssetImage(campaign['image']),
+          fit: BoxFit.cover,
+        ),
       ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.transparent,
+              Colors.black.withValues(alpha: 0.3),
+            ],
+          ),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(
-                icon,
-                size: 32,
-                color: const Color(0xFF5e17eb),
-              ),
-              const SizedBox(height: 12),
               Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
+                campaign['topText'],
+                style: TextStyle(
+                  fontSize: 32,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF5e17eb),
+                  color: campaign['textColor'],
                 ),
-                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 4),
               Text(
-                subtitle,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
+                campaign['bottomText'],
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: campaign['textColor'],
                 ),
-                textAlign: TextAlign.center,
               ),
             ],
           ),
@@ -219,32 +265,56 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  void _showFeatureDialog(BuildContext context, String feature) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(feature),
-          content: Text('Funcionalidade $feature em desenvolvimento. Faça login para acessar!'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancelar'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.pushNamed(context, '/login');
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF5e17eb),
-                foregroundColor: Colors.white,
+  Widget _buildRainbowOverlay(Map<String, dynamic> campaign) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.red,
+            Colors.orange,
+            Colors.yellow,
+            Colors.green,
+            Colors.blue,
+            Color(0xFF4B0082), // Indigo
+            Color(0xFF9400D3), // Violet
+          ],
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              campaign['topText'],
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: campaign['textColor'],
               ),
-              child: const Text('Fazer Login'),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: const Color(0xFF5e17eb),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                campaign['bottomText'],
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: campaign['textColor'],
+                ),
+              ),
             ),
           ],
-        );
-      },
+        ),
+      ),
     );
   }
 }

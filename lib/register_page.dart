@@ -1,24 +1,38 @@
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
+  final _nomeController = TextEditingController();
   final _rmController = TextEditingController();
+  final _emailController = TextEditingController();
   final _senhaController = TextEditingController();
   bool _obscurePassword = true;
   bool _isLoading = false;
 
   @override
   void dispose() {
+    _nomeController.dispose();
     _rmController.dispose();
+    _emailController.dispose();
     _senhaController.dispose();
     super.dispose();
+  }
+
+  String? _validateNome(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Por favor, insira seu nome';
+    }
+    if (value.length < 2) {
+      return 'Nome deve ter pelo menos 2 caracteres';
+    }
+    return null;
   }
 
   String? _validateRM(String? value) {
@@ -34,6 +48,16 @@ class _LoginPageState extends State<LoginPage> {
     return null;
   }
 
+  String? _validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Por favor, insira seu email';
+    }
+    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+      return 'Por favor, insira um email válido';
+    }
+    return null;
+  }
+
   String? _validateSenha(String? value) {
     if (value == null || value.isEmpty) {
       return 'Por favor, insira sua senha';
@@ -44,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
     return null;
   }
 
-  Future<void> _handleLogin() async {
+  Future<void> _handleRegister() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -53,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
       _isLoading = true;
     });
 
-    // Simular processo de login
+    // Simular processo de cadastro
     await Future.delayed(const Duration(seconds: 2));
 
     if (mounted) {
@@ -63,7 +87,7 @@ class _LoginPageState extends State<LoginPage> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Login realizado com sucesso!'),
+          content: Text('Cadastro realizado com sucesso!'),
           backgroundColor: Color(0xFF5e17eb),
         ),
       );
@@ -97,18 +121,58 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 
-                const Spacer(),
+                const SizedBox(height: 20),
                 
                 // Título
                 const Text(
-                  "Login",
+                  "Cadastro",
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF5e17eb),
                   ),
                 ),
-                const SizedBox(height: 48),
+                const SizedBox(height: 40),
+                
+                // Campo Nome
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Nome",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF5e17eb),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      controller: _nomeController,
+                      validator: _validateNome,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Color(0xFF5e17eb)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Color(0xFF5e17eb)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Color(0xFF5e17eb), width: 2),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Colors.red),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
                 
                 // Campo RM
                 Column(
@@ -149,7 +213,48 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 20),
+                
+                // Campo Email
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Email",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF5e17eb),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      validator: _validateEmail,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Color(0xFF5e17eb)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Color(0xFF5e17eb)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Color(0xFF5e17eb), width: 2),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Colors.red),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
                 
                 // Campo Senha
                 Column(
@@ -203,7 +308,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 40),
                 
-                // Botão Entrar
+                // Botão Cadastrar
                 SizedBox(
                   width: double.infinity,
                   height: 56,
@@ -215,7 +320,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       elevation: 0,
                     ),
-                    onPressed: _isLoading ? null : _handleLogin,
+                    onPressed: _isLoading ? null : _handleRegister,
                     child: _isLoading
                         ? const SizedBox(
                             height: 24,
@@ -226,7 +331,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           )
                         : const Text(
-                            "Entrar",
+                            "Cadastrar",
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -237,12 +342,12 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 24),
                 
-                // Link para cadastro
+                // Link para login
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
-                      "Não tem uma conta? ",
+                      "Já tem uma conta? ",
                       style: TextStyle(
                         color: Colors.grey,
                         fontSize: 16,
@@ -250,10 +355,10 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     TextButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, '/register');
+                        Navigator.pushReplacementNamed(context, '/login');
                       },
                       child: const Text(
-                        "Cadastre-se",
+                        "Faça login",
                         style: TextStyle(
                           color: Color(0xFF5e17eb),
                           fontSize: 16,
@@ -263,8 +368,6 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ],
                 ),
-                
-                const Spacer(),
               ],
             ),
           ),
