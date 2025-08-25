@@ -6,245 +6,283 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Página Principal'),
-        backgroundColor: const Color(0xFF5e17eb),
-        foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.login),
-            onPressed: () {
-              Navigator.pushNamed(context, '/login');
-            },
-            tooltip: 'Fazer Login',
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+      backgroundColor: Colors.white,
+      body: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header com boas-vindas
+            // Top Bar
             Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF5e17eb), Color(0xFF7c3aed)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Icon(
-                    Icons.home,
-                    size: 40,
-                    color: Colors.white,
-                  ),
-                  SizedBox(height: 12),
-                  Text(
-                    'Bem-vindo ao App!',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Explore as funcionalidades disponíveis',
+                  const Text(
+                    '9:41',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.white70,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF5e17eb),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.person,
+                      color: Colors.white,
+                      size: 20,
                     ),
                   ),
                 ],
               ),
             ),
-            
-            const SizedBox(height: 24),
-            
-            // Seção de funcionalidades
-            const Text(
-              'Funcionalidades',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF5e17eb),
-              ),
-            ),
-            const SizedBox(height: 16),
-            
-            // Grid de cards de funcionalidades
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              childAspectRatio: 1.2,
-              children: [
-                _buildFeatureCard(
-                  context,
-                  icon: Icons.school,
-                  title: 'Cursos',
-                  subtitle: 'Acesse seus cursos',
-                  onTap: () => _showFeatureDialog(context, 'Cursos'),
-                ),
-                _buildFeatureCard(
-                  context,
-                  icon: Icons.assignment,
-                  title: 'Atividades',
-                  subtitle: 'Veja suas tarefas',
-                  onTap: () => _showFeatureDialog(context, 'Atividades'),
-                ),
-                _buildFeatureCard(
-                  context,
-                  icon: Icons.calendar_today,
-                  title: 'Calendário',
-                  subtitle: 'Eventos e datas',
-                  onTap: () => _showFeatureDialog(context, 'Calendário'),
-                ),
-                _buildFeatureCard(
-                  context,
-                  icon: Icons.person,
-                  title: 'Perfil',
-                  subtitle: 'Suas informações',
-                  onTap: () => _showFeatureDialog(context, 'Perfil'),
-                ),
-              ],
-            ),
-            
-            const SizedBox(height: 24),
-            
-            // Seção de informações
+
+            // Título principal
             Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.grey[50],
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey[200]!),
-              ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: const Row(
                 children: [
                   Text(
-                    'Informações',
+                    'Projetos',
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 28,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF5e17eb),
                     ),
                   ),
-                  SizedBox(height: 12),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Cards de projetos (scrolláveis)
+            SizedBox(
+              height: 200,
+              child: PageView.builder(
+                itemCount: 4,
+                itemBuilder: (context, index) {
+                  return _buildProjectCard(index);
+                },
+              ),
+            ),
+
+            // Indicadores de página
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(4, (index) {
+                return Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: index == 0
+                        ? const Color(0xFF5e17eb)
+                        : Colors.grey[300],
+                  ),
+                );
+              }),
+            ),
+
+            const SizedBox(height: 40),
+
+            // Segunda seção de projetos
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: const Row(
+                children: [
                   Text(
-                    '• Faça login para acessar funcionalidades exclusivas\n'
-                    '• Mantenha seus dados atualizados\n'
-                    '• Entre em contato em caso de dúvidas',
+                    'Projetos',
                     style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                      height: 1.5,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF5e17eb),
                     ),
                   ),
                 ],
               ),
             ),
+
+            const SizedBox(height: 16),
+
+            // Descrição dos projetos
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: const Text(
+                'Sistema completo para avaliação de projetos de TCC. Escaneie códigos ou faça login para acessar funcionalidades exclusivas e gerenciar suas avaliações.',
+                style: TextStyle(fontSize: 16, color: Colors.grey, height: 1.5),
+              ),
+            ),
+
+            const Spacer(),
+
+            // Botão de ação principal
+            Container(
+              padding: const EdgeInsets.all(20),
+              child: SizedBox(
+                width: double.infinity,
+                height: 60,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/qr-scanner');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF5e17eb),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 24,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: const Icon(
+                          Icons.qr_code,
+                          size: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      const Text(
+                        'Inserir Código do Projeto',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            // Barra de navegação inferior
+            Container(height: 1, color: Colors.grey[300]),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/login');
-        },
-        backgroundColor: const Color(0xFF5e17eb),
-        foregroundColor: Colors.white,
-        child: const Icon(Icons.login),
       ),
     );
   }
 
-  Widget _buildFeatureCard(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-  }) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+  Widget _buildProjectCard(int index) {
+    final projects = [
+      {
+        'title': 'Sistema de Gestão Escolar',
+        'subtitle': 'Aplicativo para gerenciar notas e frequência',
+        'color': const Color(0xFFF5F5DC), // Bege claro
+        'textColor': Colors.black,
+        'icon': Icons.school,
+      },
+      {
+        'title': 'App Delivery Sustentável',
+        'subtitle': 'Plataforma com veículos elétricos',
+        'color': const Color(0xFFE8F5E8), // Verde claro
+        'textColor': Colors.black,
+        'icon': Icons.delivery_dining,
+      },
+      {
+        'title': 'Monitoramento Saúde IoT',
+        'subtitle': 'Sensores para sinais vitais em tempo real',
+        'color': const Color(0xFFE3F2FD), // Azul claro
+        'textColor': Colors.black,
+        'icon': Icons.monitor_heart,
+      },
+      {
+        'title': 'Rede Social Estudantes',
+        'subtitle': 'Compartilhamento de conhecimento acadêmico',
+        'color': const Color(0xFFF3E5F5), // Roxo claro
+        'textColor': Colors.black,
+        'icon': Icons.people,
+      },
+    ];
+
+    final project = projects[index];
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: project['color'] as Color,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              Icon(
-                icon,
-                size: 32,
-                color: const Color(0xFF5e17eb),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF5e17eb),
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF5e17eb).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
+                child: Icon(
+                  project['icon'] as IconData,
+                  color: const Color(0xFF5e17eb),
+                  size: 24,
                 ),
-                textAlign: TextAlign.center,
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF5e17eb),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  'TCC',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ],
           ),
-        ),
+          const SizedBox(height: 20),
+          Text(
+            project['title'] as String,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: project['textColor'] as Color,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            project['subtitle'] as String,
+            style: TextStyle(
+              fontSize: 14,
+              color: (project['textColor'] as Color).withValues(alpha: 0.7),
+            ),
+          ),
+        ],
       ),
-    );
-  }
-
-  void _showFeatureDialog(BuildContext context, String feature) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(feature),
-          content: Text('Funcionalidade $feature em desenvolvimento. Faça login para acessar!'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancelar'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.pushNamed(context, '/login');
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF5e17eb),
-                foregroundColor: Colors.white,
-              ),
-              child: const Text('Fazer Login'),
-            ),
-          ],
-        );
-      },
     );
   }
 }

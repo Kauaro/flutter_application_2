@@ -85,8 +85,15 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         ),
       );
       
-      // Navegar para a HomePage
-      Navigator.pushReplacementNamed(context, '/home');
+      // Navegar para o histórico de avaliações
+      Navigator.pushReplacementNamed(
+        context, 
+        '/historico',
+        arguments: {
+          'matricula': _rmController.text.trim(),
+          'nome': 'Usuário', // Nome mockado para demonstração
+        },
+      );
     }
   }
 
