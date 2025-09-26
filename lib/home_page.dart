@@ -78,17 +78,22 @@ class _HomePageState extends State<HomePage> {
                       color: Colors.black,
                     ),
                   ),
-                  Container(
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF5e17eb),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.person,
-                      size: 16,
-                      color: Colors.white,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/login');
+                    },
+                    child: Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF5e17eb),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.person,
+                        size: 16,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ],
@@ -195,7 +200,7 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: Container(
         margin: const EdgeInsets.only(bottom: 16),
-        child: FloatingActionButton.extended(
+        child: FloatingActionButton(
           onPressed: () {
             // Ação do botão QR code
             ScaffoldMessenger.of(context).showSnackBar(
@@ -207,8 +212,7 @@ class _HomePageState extends State<HomePage> {
           },
           backgroundColor: const Color(0xFF5e17eb),
           foregroundColor: Colors.white,
-          icon: const Icon(Icons.qr_code),
-          label: const Text('QR Code'),
+          child: const Icon(Icons.qr_code, size: 20),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -232,7 +236,7 @@ class _HomePageState extends State<HomePage> {
             end: Alignment.bottomCenter,
             colors: [
               Colors.transparent,
-              Colors.black.withValues(alpha: 0.3),
+              Colors.black.withOpacity(0.3),
             ],
           ),
         ),
