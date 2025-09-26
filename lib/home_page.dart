@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dart:async';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,6 +12,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  Timer? _timer;
 
   final List<Map<String, dynamic>> campaigns = [
     {
@@ -18,24 +20,24 @@ class _HomePageState extends State<HomePage> {
       'image': 'nao_racismo.jpg',
       'backgroundColor': const Color(0xFFF5F5DC), // Bege claro
       'textColor': Colors.black,
-      'topText': 'NO',
-      'bottomText': 'TO RACISM',
+      'topText': '',
+      'bottomText': '',
     },
     {
       'title': 'STOP HOMOPHOBIA',
       'image': 'nao_homofobia.jpg',
       'backgroundColor': Colors.transparent, // Bandeira do arco-íris
       'textColor': Colors.white,
-      'topText': 'STOP',
-      'bottomText': 'HOMOPHOBIA',
+      'topText': '',
+      'bottomText': '',
     },
     {
       'title': 'STOP FEMINICIDE',
       'image': 'nao_femicidio.webp',
       'backgroundColor': const Color(0xFF8B0000), // Vermelho escuro
       'textColor': Colors.white,
-      'topText': 'STOP',
-      'bottomText': 'FEMINICIDE',
+      'topText': '',
+      'bottomText': '',
     },
   ];
 
@@ -49,10 +51,27 @@ class _HomePageState extends State<HomePage> {
         statusBarIconBrightness: Brightness.dark,
       ),
     );
+    
+    // Iniciar carrossel automático
+    _startAutoSlide();
+  }
+  
+  void _startAutoSlide() {
+    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      if (_pageController.hasClients) {
+        int nextPage = (_currentPage + 1) % campaigns.length;
+        _pageController.animateToPage(
+          nextPage,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
   }
 
   @override
   void dispose() {
+    _timer?.cancel();
     _pageController.dispose();
     super.dispose();
   }
@@ -64,20 +83,25 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(
         child: Column(
           children: [
-            // Status Bar personalizada
+            // Header com logo e botão de login
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    '9:41',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
+                  // Logo
+                  GestureDetector(
+                    onTap: () {
+                      // Já está na home page, mas pode ser útil para refresh ou scroll to top
+                      Navigator.pushReplacementNamed(context, '/');
+                    },
+                    child: Image.asset(
+                      'imagens/LOGO.png',
+                      height: 40,
+                      fit: BoxFit.contain,
                     ),
                   ),
+                  // Botão de login
                   GestureDetector(
                     onTap: () {
                       Navigator.pushNamed(context, '/login');
@@ -107,9 +131,9 @@ class _HomePageState extends State<HomePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Título "Campaigns"
+                    // Título "Projetos"
                     const Text(
-                      'Campaigns',
+                      'Projetos',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -175,7 +199,7 @@ class _HomePageState extends State<HomePage> {
                     
                     // Seção de texto
                     const Text(
-                      'Campaigns',
+                      'Sobre',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,

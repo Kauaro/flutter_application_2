@@ -102,16 +102,27 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                // Botão voltar
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: IconButton(
+        child: Column(
+          children: [
+            // Header com logo e botão voltar
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Logo
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushReplacementNamed(context, '/');
+                    },
+                    child: Image.asset(
+                      'imagens/LOGO.png',
+                      height: 40,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  // Botão voltar
+                  IconButton(
                     onPressed: () => Navigator.pushReplacementNamed(context, '/'),
                     icon: const Icon(
                       Icons.arrow_back,
@@ -119,7 +130,18 @@ class _RegisterPageState extends State<RegisterPage> {
                       size: 28,
                     ),
                   ),
-                ),
+                ],
+              ),
+            ),
+            
+            // Conteúdo principal
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
                 
                 const SizedBox(height: 20),
                 
@@ -367,10 +389,12 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ),
                   ],
+                    ],
+                  ),
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
