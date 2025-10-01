@@ -226,13 +226,8 @@ class _HomePageState extends State<HomePage> {
         margin: const EdgeInsets.only(bottom: 16),
         child: FloatingActionButton(
           onPressed: () {
-            // Ação do botão QR code
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Funcionalidade QR Code em desenvolvimento'),
-                backgroundColor: Color(0xFF5e17eb),
-              ),
-            );
+            // Navegar para a página de avaliação
+            Navigator.pushNamed(context, '/avaliacao');
           },
           backgroundColor: const Color(0xFF5e17eb),
           foregroundColor: Colors.white,
