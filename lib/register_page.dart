@@ -93,14 +93,14 @@ class _RegisterPageState extends State<RegisterPage> {
       );
       
       // Voltar para a página inicial
-      Navigator.pushReplacementNamed(context, '/');
+      Navigator.pushReplacementNamed(context, '/home');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF3E9F7),
       body: SafeArea(
         child: Column(
           children: [
@@ -113,7 +113,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   // Logo
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushReplacementNamed(context, '/');
+                      Navigator.pushReplacementNamed(context, '/home');
                     },
                     child: Image.asset(
                       'imagens/LOGO.png',
@@ -123,7 +123,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   // Botão voltar
                   IconButton(
-                    onPressed: () => Navigator.pushReplacementNamed(context, '/'),
+                    onPressed: () => Navigator.pushReplacementNamed(context, '/home'),
                     icon: const Icon(
                       Icons.arrow_back,
                       color: Color(0xFF5e17eb),
@@ -389,7 +389,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ),
                   ],
-                    ],
+                   ) ],
                   ),
                 ),
               ),

@@ -17,7 +17,7 @@ class _HomePageState extends State<HomePage> {
   final List<Map<String, dynamic>> campaigns = [
     {
       'title': 'NO TO RACISM',
-      'image': 'nao_racismo.jpg',
+      'image': 'imagens/nao_racismo.jpg',
       'backgroundColor': const Color(0xFFF5F5DC), // Bege claro
       'textColor': Colors.black,
       'topText': '',
@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
     },
     {
       'title': 'STOP HOMOPHOBIA',
-      'image': 'nao_homofobia.jpg',
+      'image': 'imagens/nao_homofobia.jpg',
       'backgroundColor': Colors.transparent, // Bandeira do arco-íris
       'textColor': Colors.white,
       'topText': '',
@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
     },
     {
       'title': 'STOP FEMINICIDE',
-      'image': 'nao_femicidio.webp',
+      'image': 'imagens/nao_femicidio.webp',
       'backgroundColor': const Color(0xFF8B0000), // Vermelho escuro
       'textColor': Colors.white,
       'topText': '',
@@ -79,7 +79,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF3E9F7),
       body: SafeArea(
         child: Column(
           children: [
@@ -97,7 +97,7 @@ class _HomePageState extends State<HomePage> {
                     },
                     child: Image.asset(
                       'imagens/LOGO.png',
-                      height: 40,
+                      height: 70,
                       fit: BoxFit.contain,
                     ),
                   ),
@@ -107,15 +107,15 @@ class _HomePageState extends State<HomePage> {
                       Navigator.pushNamed(context, '/login');
                     },
                     child: Container(
-                      width: 24,
-                      height: 24,
+                      width: 50,
+                      height: 50,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF5e17eb),
+                        color: const Color(0xFF6A1B9A),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
                         Icons.person,
-                        size: 16,
+                        size: 30,
                         color: Colors.white,
                       ),
                     ),
@@ -131,20 +131,12 @@ class _HomePageState extends State<HomePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Título "Projetos"
-                    const Text(
-                      'Projetos',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF5e17eb),
-                      ),
-                    ),
+                    // Título "Projetos
                     const SizedBox(height: 20),
                     
                     // Carrossel de campanhas
                     SizedBox(
-                      height: 200,
+                      height: 350,
                       child: PageView.builder(
                         controller: _pageController,
                         onPageChanged: (index) {
@@ -203,7 +195,7 @@ class _HomePageState extends State<HomePage> {
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF5e17eb),
+                        color: Color(0xFF1E1E1E),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -211,7 +203,7 @@ class _HomePageState extends State<HomePage> {
                       'O Projeto SLA é uma feira cultural que promove a reflexão e o enfrentamento de questões sociais como racismo, homofobia, xenofobia e preconceito religioso. Com uma abordagem prática e educativa, os alunos se tornam protagonistas, desenvolvendo projetos interdisciplinares que transformam as salas de aula em espaços de conscientização.',
                       style: TextStyle(
                         fontSize: 16,
-                        color: Colors.grey,
+                        color: Color(0xFF6E6E6E),
                         height: 1.5,
                       ),
                     ),
@@ -223,15 +215,15 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       floatingActionButton: Container(
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: const EdgeInsets.only(bottom: 20),
         child: FloatingActionButton(
           onPressed: () {
             // Navegar para a página de avaliação
             Navigator.pushNamed(context, '/avaliacao');
           },
-          backgroundColor: const Color(0xFF5e17eb),
+          backgroundColor: const Color(0xFF6A1B9A),
           foregroundColor: Colors.white,
-          child: const Icon(Icons.qr_code, size: 20),
+          child: const Icon(Icons.qr_code, size: 30),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

@@ -103,7 +103,7 @@ class _AvaliacaoPageState extends State<AvaliacaoPage> {
       );
       
       // Voltar para a página inicial
-      Navigator.pushReplacementNamed(context, '/');
+      Navigator.pushReplacementNamed(context, '/home');
     }
   }
 
@@ -133,7 +133,7 @@ class _AvaliacaoPageState extends State<AvaliacaoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF3E9F7),
       body: SafeArea(
         child: Column(
           children: [
@@ -144,7 +144,7 @@ class _AvaliacaoPageState extends State<AvaliacaoPage> {
                 alignment: Alignment.topLeft,
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.pushReplacementNamed(context, '/');
+                    Navigator.pushReplacementNamed(context, '/home');
                   },
                   child: Image.asset(
                     'imagens/LOGO.png',
