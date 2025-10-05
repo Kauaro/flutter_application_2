@@ -21,19 +21,19 @@ class _IntroPageState extends State<IntroPage> {
     {
       'title': 'Empatia e Respeito',
       'description': 'Promovemos a empatia e o respeito às diferenças culturais, sociais e individuais.',
-      'color': const Color(0xFFe74c3c),
+      'color': const Color(0xFF7c3aed),
       'icon': Icons.favorite,
     },
     {
       'title': 'Projetos Sociais',
       'description': 'Os alunos se tornam protagonistas desenvolvendo projetos sobre os preconceitos e as adversidades na nossa sociedade.',
-      'color': const Color(0xFF27ae60),
+      'color': const Color(0xFF9333ea),
       'icon': Icons.group,
     },
     {
       'title': 'Vamos Começar!',
       'description': 'Avalie os projetos e participe dessa jornada de aprendizado e transformação!',
-      'color': const Color(0xFFf39c12),
+      'color': const Color(0xFFa855f7),
       'icon': Icons.rocket_launch,
     },
   ];
@@ -131,7 +131,7 @@ class _IntroPageState extends State<IntroPage> {
             child: _currentPage == _slides.length - 1
                 ? ElevatedButton(
                     onPressed: () {
-                      Navigator.pushReplacementNamed(context, '/home');
+                      Navigator.pushReplacementNamed(context, '/user-type');
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
@@ -154,7 +154,7 @@ class _IntroPageState extends State<IntroPage> {
                     children: [
                       TextButton(
                         onPressed: () {
-                          Navigator.pushReplacementNamed(context, '/home');
+                          Navigator.pushReplacementNamed(context, '/user-type');
                         },
                         child: const Text(
                           'Pular',

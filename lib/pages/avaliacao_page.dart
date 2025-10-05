@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../models/avaliacao.dart';
-import '../services/avaliacao_service.dart';
 
 class AvaliacaoPage extends StatefulWidget {
   const AvaliacaoPage({super.key});
@@ -11,59 +9,77 @@ class AvaliacaoPage extends StatefulWidget {
 
 class _AvaliacaoPageState extends State<AvaliacaoPage> {
   final _formKey = GlobalKey<FormState>();
-  final _matriculaController = TextEditingController();
   final _nomeController = TextEditingController();
-  final _feedbackController = TextEditingController();
-  
-  int _nota = 5;
+  final _rmController = TextEditingController();
+  final _salaController = TextEditingController();
+  final _descricaoController = TextEditingController();
+  int _rating = 0;
   bool _isLoading = false;
-  late Projeto _projeto;
-
-  @override
-  void initState() {
-    super.initState();
-    // O projeto será passado como argumento da rota
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final args = ModalRoute.of(context)?.settings.arguments;
-      if (args is Projeto) {
-        _projeto = args;
-      } else {
-        // Se não houver projeto, redirecionar para home
-        Navigator.pushReplacementNamed(context, '/');
-      }
-    });
-  }
 
   @override
   void dispose() {
-    _matriculaController.dispose();
     _nomeController.dispose();
-    _feedbackController.dispose();
+    _rmController.dispose();
+    _salaController.dispose();
+    _descricaoController.dispose();
     super.dispose();
-  }
-
-  String? _validateMatricula(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Por favor, insira sua matrícula';
-    }
-    if (value.length < 5) {
-      return 'Matrícula deve ter pelo menos 5 dígitos';
-    }
-    return null;
   }
 
   String? _validateNome(String? value) {
     if (value == null || value.isEmpty) {
       return 'Por favor, insira seu nome';
     }
-    if (value.length < 3) {
-      return 'Nome deve ter pelo menos 3 caracteres';
+    if (value.length < 2) {
+      return 'Nome deve ter pelo menos 2 caracteres';
     }
     return null;
   }
 
-  Future<void> _submitAvaliacao() async {
+  String? _validateRM(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Por favor, insira seu RM';
+    }
+    if (value.length < 5) {
+      return 'RM deve ter pelo menos 5 dígitos';
+    }
+    if (!RegExp(r'^\d+$').hasMatch(value)) {
+      return 'RM deve conter apenas números';
+    }
+    return null;
+  }
+
+  String? _validateSala(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Por favor, insira o número da sala';
+    }
+    if (!RegExp(r'^\d+$').hasMatch(value)) {
+      return 'Número da sala deve conter apenas números';
+    }
+    return null;
+  }
+
+  String? _validateDescricao(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Por favor, insira uma descrição';
+    }
+    if (value.length < 10) {
+      return 'Descrição deve ter pelo menos 10 caracteres';
+    }
+    return null;
+  }
+
+  Future<void> _handleAvaliacao() async {
     if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    if (_rating == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor, selecione uma avaliação com as estrelas'),
+          backgroundColor: Colors.red,
+        ),
+      );
       return;
     }
 
@@ -71,323 +87,315 @@ class _AvaliacaoPageState extends State<AvaliacaoPage> {
       _isLoading = true;
     });
 
-    try {
-      final avaliacao = Avaliacao(
-        id: AvaliacaoService.gerarId(),
-        matricula: _matriculaController.text.trim(),
-        nome: _nomeController.text.trim(),
-        nota: _nota,
-        feedback: _feedbackController.text.trim(),
-        projetoId: _projeto.id,
-        projetoNome: _projeto.nome,
-        dataAvaliacao: DateTime.now(),
+    // Simular processo de envio da avaliação
+    await Future.delayed(const Duration(seconds: 2));
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Avaliação enviada com sucesso!'),
+          backgroundColor: Color(0xFF5e17eb),
+        ),
       );
-
-      final success = await AvaliacaoService.salvarAvaliacao(avaliacao);
-
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-
-        if (success) {
-          _showSuccessDialog();
-        } else {
-          _showErrorDialog('Erro', 'Não foi possível salvar a avaliação. Tente novamente.');
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-        _showErrorDialog('Erro', 'Erro ao salvar avaliação: $e');
-      }
+      
+      // Voltar para a página inicial
+      Navigator.pushReplacementNamed(context, '/home');
     }
   }
 
-  void _showSuccessDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Row(
-            children: [
-              Icon(Icons.check_circle, color: Colors.green),
-              SizedBox(width: 8),
-              Text('Sucesso!'),
-            ],
+  Widget _buildStarRating() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(5, (index) {
+        return GestureDetector(
+          onTap: () {
+            setState(() {
+              _rating = index + 1;
+            });
+          },
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            child: Icon(
+              index < _rating ? Icons.star : Icons.star_border,
+              size: 40,
+              color: index < _rating ? Colors.amber : Colors.grey[400],
+            ),
           ),
-          content: const Text('Sua avaliação foi salva com sucesso!'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.pushReplacementNamed(context, '/');
-              },
-              child: const Text('Voltar ao Início'),
-            ),
-          ],
         );
-      },
-    );
-  }
-
-  void _showErrorDialog(String title, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
+      }),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    // Verificar se o projeto foi carregado
-    if (!mounted) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Avaliar Projeto'),
-        backgroundColor: const Color(0xFF5e17eb),
-        foregroundColor: Colors.white,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Informações do projeto
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF5e17eb), Color(0xFF7c3aed)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+      backgroundColor: const Color(0xFFF3E9F7),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Logo no canto superior esquerdo
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pushReplacementNamed(context, '/home');
+                  },
+                  child: Image.asset(
+                    'imagens/LOGO.png',
+                    height: 40,
+                    fit: BoxFit.contain,
                   ),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(
-                      Icons.school,
-                      size: 40,
-                      color: Colors.white,
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      _projeto.nome,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Autor: ${_projeto.autor}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.white70,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      _projeto.descricao,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.white70,
-                      ),
-                    ),
-                  ],
                 ),
               ),
-              
-              const SizedBox(height: 24),
-              
-              // Título do formulário
-              const Text(
-                'Formulário de Avaliação',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF5e17eb),
-                ),
-              ),
-              
-              const SizedBox(height: 20),
-              
-              // Campo Matrícula
-              TextFormField(
-                controller: _matriculaController,
-                keyboardType: TextInputType.number,
-                validator: _validateMatricula,
-                decoration: InputDecoration(
-                  labelText: 'Matrícula *',
-                  prefixIcon: const Icon(Icons.badge, color: Color(0xFF5e17eb)),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0xFF5e17eb), width: 2),
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey[50],
-                ),
-              ),
-              
-              const SizedBox(height: 20),
-              
-              // Campo Nome
-              TextFormField(
-                controller: _nomeController,
-                validator: _validateNome,
-                decoration: InputDecoration(
-                  labelText: 'Nome Completo *',
-                  prefixIcon: const Icon(Icons.person, color: Color(0xFF5e17eb)),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0xFF5e17eb), width: 2),
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey[50],
-                ),
-              ),
-              
-              const SizedBox(height: 20),
-              
-              // Campo Nota
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.grey[50],
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey[300]!),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+            ),
+            
+            // Conteúdo principal
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.star, color: Color(0xFF5e17eb)),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Nota: $_nota/10',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                        // Título "Avaliação"
+                        const Center(
+                          child: Text(
+                            'Avaliação',
+                            style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF5e17eb),
+                            ),
                           ),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Slider(
-                      value: _nota.toDouble(),
-                      min: 0,
-                      max: 10,
-                      divisions: 10,
-                      activeColor: const Color(0xFF5e17eb),
-                      onChanged: (value) {
-                        setState(() {
-                          _nota = value.round();
-                        });
-                      },
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Text('0', style: TextStyle(color: Colors.grey)),
-                        Text('10', style: TextStyle(color: Colors.grey)),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              
-              const SizedBox(height: 20),
-              
-              // Campo Feedback
-              TextFormField(
-                controller: _feedbackController,
-                maxLines: 4,
-                decoration: InputDecoration(
-                  labelText: 'Feedback (opcional)',
-                  prefixIcon: const Icon(Icons.feedback, color: Color(0xFF5e17eb)),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0xFF5e17eb), width: 2),
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey[50],
-                  hintText: 'Compartilhe sua opinião sobre o projeto...',
-                ),
-              ),
-              
-              const SizedBox(height: 30),
-              
-              // Botão Enviar
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _submitAvaliacao,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF5e17eb),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 2,
-                  ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        )
-                      : const Text(
-                          'Enviar Avaliação',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                        const SizedBox(height: 32),
+                        
+                        // Campo Nome
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Nome",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF5e17eb),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _nomeController,
+                              validator: _validateNome,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(color: Color(0xFF5e17eb)),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(color: Color(0xFF5e17eb)),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(color: Color(0xFF5e17eb), width: 2),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(color: Colors.red),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        
+                        // Campo RM
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "RM",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF5e17eb),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _rmController,
+                              keyboardType: TextInputType.number,
+                              validator: _validateRM,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(color: Color(0xFF5e17eb)),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(color: Color(0xFF5e17eb)),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(color: Color(0xFF5e17eb), width: 2),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(color: Colors.red),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        
+                        // Campo Número da Sala
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Número da Sala",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF5e17eb),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _salaController,
+                              keyboardType: TextInputType.number,
+                              validator: _validateSala,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(color: Color(0xFF5e17eb)),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(color: Color(0xFF5e17eb)),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(color: Color(0xFF5e17eb), width: 2),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(color: Colors.red),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        
+                        // Campo Descrição
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Descrição",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF5e17eb),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _descricaoController,
+                              maxLines: 4,
+                              validator: _validateDescricao,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(color: Color(0xFF5e17eb)),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(color: Color(0xFF5e17eb)),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(color: Color(0xFF5e17eb), width: 2),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(color: Colors.red),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 32),
+                        
+                        // Avaliação com estrelas
+                        const Center(
+                          child: Text(
+                            "Avalie o projeto:",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF5e17eb),
+                            ),
                           ),
                         ),
+                        const SizedBox(height: 16),
+                        _buildStarRating(),
+                        const SizedBox(height: 48),
+                        
+                        // Botão Enviar Avaliação
+                        SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF5e17eb),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              elevation: 0,
+                            ),
+                            onPressed: _isLoading ? null : _handleAvaliacao,
+                            child: _isLoading
+                                ? const SizedBox(
+                                    height: 24,
+                                    width: 24,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                    ),
+                                  )
+                                : const Text(
+                                    "Enviar Avaliação",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
