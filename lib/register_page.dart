@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'services/login_service.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -77,23 +78,39 @@ class _RegisterPageState extends State<RegisterPage> {
       _isLoading = true;
     });
 
-    // Simular processo de cadastro
-    await Future.delayed(const Duration(seconds: 2));
+    final alunoData = {
+      'nome': _nomeController.text.trim(),
+      'matricula': _matriculaController.text.trim(),
+      'email': _emailController.text.trim(),
+      'senha': _senhaController.text.trim(),
+    };
 
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Cadastro realizado com sucesso!'),
-          backgroundColor: Color(0xFF9C6ADE),
-        ),
-      );
-      
-      // Voltar para a página inicial
-      Navigator.pushReplacementNamed(context, '/home');
+    try {
+      final result = await LoginService.cadastrarAluno(alunoData);
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Cadastro realizado com sucesso!'),
+            backgroundColor: const Color(0xFF9C6ADE),
+          ),
+        );
+        Navigator.pushReplacementNamed(context, '/home');
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao cadastrar: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'services/login_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -23,13 +24,7 @@ class _LoginPageState extends State<LoginPage> {
 
   String? _validateMatricula(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Por favor, insira seu Matricula';
-    }
-    if (value.length < 5) {
-      return 'Matricula deve ter pelo menos 5 dígitos';
-    }
-    if (!RegExp(r'^\d+$').hasMatch(value)) {
-      return 'Matricula deve conter apenas números';
+      return 'Por favor, insira sua matrícula';
     }
     return null;
   }
@@ -37,9 +32,6 @@ class _LoginPageState extends State<LoginPage> {
   String? _validateSenha(String? value) {
     if (value == null || value.isEmpty) {
       return 'Por favor, insira sua senha';
-    }
-    if (value.length < 6) {
-      return 'Senha deve ter pelo menos 6 caracteres';
     }
     return null;
   }
@@ -53,23 +45,42 @@ class _LoginPageState extends State<LoginPage> {
       _isLoading = true;
     });
 
-    // Simular processo de login
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
+
+    final usuario = LoginService.autenticar(
+      _matriculaController.text,
+      _senhaController.text,
+    );
 
     if (mounted) {
       setState(() {
         _isLoading = false;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Login realizado com sucesso!'),
-          backgroundColor: Color(0xFF1E3A8A),
-        ),
-      );
-      
-      // Voltar para a página inicial
-      Navigator.pushReplacementNamed(context, '/home');
+      if (usuario != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Bem-vindo, ${usuario['nome']}!'),
+            backgroundColor: const Color(0xFF4CAF50),
+          ),
+        );
+        
+        Navigator.pushReplacementNamed(
+          context,
+          '/historico',
+          arguments: {
+            'matricula': usuario['matricula'],
+            'nome': usuario['nome'],
+          },
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Matrícula ou senha incorretos'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -197,11 +208,11 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             child: TextFormField(
                               controller: _matriculaController,
-                              keyboardType: TextInputType.number,
+                              keyboardType: TextInputType.text,
                               validator: _validateMatricula,
                               style: const TextStyle(fontSize: 16),
                               decoration: InputDecoration(
-                                labelText: 'Matricula',
+                                labelText: 'Matrícula',
                                 labelStyle: const TextStyle(
                                   color: Color(0xFF9C6ADE),
                                   fontWeight: FontWeight.w500,

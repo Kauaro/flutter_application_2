@@ -250,7 +250,7 @@ class _HomePageState extends State<HomePage> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
-                          () {},
+                          () => Navigator.pushNamed(context, '/galeria'),
                         ),
                         _buildModernDashboardCard(
                           'Meu\nPerfil',
