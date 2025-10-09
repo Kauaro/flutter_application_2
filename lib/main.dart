@@ -4,11 +4,13 @@ import 'login_page.dart';
 import 'register_page.dart';
 import 'intro_page.dart';
 import 'user_type_page.dart';
+import 'pages/galeria_page.dart';
+import 'meu_perfil_page.dart';
+import 'projetos_avaliados_page.dart';
 import 'pages/qr_scanner_page.dart';
 import 'pages/avaliacao_page.dart';
 import 'pages/historico_page.dart';
 import 'pages/redes_sociais_page.dart';
-import 'pages/galeria_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -36,9 +38,11 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
         '/codigo': (context) => const QRScannerPage(),
+        '/gallery': (context) => const GaleriaPage(),
+        '/meu-perfil': (context) => const MeuPerfilPage(),
+        '/projetos-avaliados': (context) => const ProjetosAvaliadosPage(),
         '/avaliar': (context) => const AvaliacaoPage(),
         '/redes-sociais': (context) => const RedesSociaisPage(),
-        '/galeria': (context) => const GaleriaPage(),
         '/historico': (context) {
           final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
           if (args != null) {
