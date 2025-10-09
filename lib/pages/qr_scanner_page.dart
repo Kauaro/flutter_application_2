@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/avaliacao_service.dart';
+import 'avaliacao_page.dart';
 
 class QRScannerPage extends StatefulWidget {
   const QRScannerPage({super.key});
@@ -35,26 +36,27 @@ class _QRScannerPageState extends State<QRScannerPage> {
       // Simular processamento
       await Future.delayed(const Duration(milliseconds: 500));
 
-      // Verificar se o QR code contém um ID de projeto válido
-      final projeto = AvaliacaoService.getProjetoById(
-        _qrCodeController.text.trim(),
-      );
+      final codigoQR = _qrCodeController.text.trim();
+      
+      // Verificar se o código QR corresponde a um projeto válido
+      final projeto = AvaliacaoService.getProjetoPorCodigoQR(codigoQR);
 
       if (projeto != null) {
-        // Navegar para a página de avaliação
+        // Navegar para a página de avaliação com o código QR
         if (mounted) {
-          Navigator.pushReplacementNamed(
+          Navigator.pushReplacement(
             context,
-            '/avaliar',
-            arguments: projeto,
+            MaterialPageRoute(
+              builder: (context) => AvaliacaoPage(codigoQR: codigoQR),
+            ),
           );
         }
       } else {
         // QR code inválido
         if (mounted) {
           _showErrorDialog(
-            'QR Code inválido',
-            'O código inserido não corresponde a um projeto válido.',
+            'Código inválido',
+            'O código "$codigoQR" não corresponde a um projeto válido.\n\nCódigos válidos: QR_TCC001_GESTAO_ESCOLAR, QR_TCC002_DELIVERY_VERDE, etc.',
           );
         }
       }
@@ -246,7 +248,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
                             color: Color(0xFF9C6ADE),
                             fontWeight: FontWeight.w500,
                           ),
-                          hintText: 'Ex: proj001, proj002, etc.',
+                          hintText: 'Código do Projeto',
                           hintStyle: TextStyle(
                             fontSize: 16,
                             color: Colors.grey[400],

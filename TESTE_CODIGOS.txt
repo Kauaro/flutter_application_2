@@ -1,0 +1,22 @@
+CÓDIGOS QR PARA TESTE - COPIE E COLE NO SCANNER
+
+QR_TCC001_GESTAO_ESCOLAR
+QR_TCC002_DELIVERY_VERDE
+QR_TCC003_SAUDE_IOT
+QR_TCC004_REDE_ESTUDANTES
+QR_TCC005_ECOMMERCE_IA
+QR_TCC006_FINANCAS_PESSOAIS
+QR_TCC007_BIBLIOTECA_DIGITAL
+QR_TCC008_CARONA_SOLIDARIA
+
+INSTRUÇÕES:
+1. Abra o app e clique em "Ler QR Code"
+2. Copie um dos códigos acima
+3. Cole no campo "Código do Projeto"
+4. Clique em "Processar Código"
+5. Preencha a avaliação:
+   - Nome: Seu nome
+   - Matrícula: Sua matrícula
+   - Descrição: Comentário sobre o projeto
+   - Estrelas: 1 a 5 estrelas
+6. Clique em "Enviar Avaliação"

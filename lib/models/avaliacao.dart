@@ -2,8 +2,8 @@ class Avaliacao {
   final String id;
   final String matricula;
   final String nome;
-  final int nota;
-  final String feedback;
+  final String descricao;
+  final int estrelas; // 1-5 estrelas
   final String projetoId;
   final String projetoNome;
   final DateTime dataAvaliacao;
@@ -12,8 +12,8 @@ class Avaliacao {
     required this.id,
     required this.matricula,
     required this.nome,
-    required this.nota,
-    required this.feedback,
+    required this.descricao,
+    required this.estrelas,
     required this.projetoId,
     required this.projetoNome,
     required this.dataAvaliacao,
@@ -24,8 +24,8 @@ class Avaliacao {
       'id': id,
       'matricula': matricula,
       'nome': nome,
-      'nota': nota,
-      'feedback': feedback,
+      'descricao': descricao,
+      'estrelas': estrelas,
       'projetoId': projetoId,
       'projetoNome': projetoNome,
       'dataAvaliacao': dataAvaliacao.toIso8601String(),
@@ -37,8 +37,8 @@ class Avaliacao {
       id: json['id'],
       matricula: json['matricula'],
       nome: json['nome'],
-      nota: json['nota'],
-      feedback: json['feedback'],
+      descricao: json['descricao'] ?? '',
+      estrelas: json['estrelas'] ?? json['nota'] ?? 1, // Compatibilidade
       projetoId: json['projetoId'],
       projetoNome: json['projetoNome'],
       dataAvaliacao: DateTime.parse(json['dataAvaliacao']),
@@ -51,12 +51,14 @@ class Projeto {
   final String nome;
   final String descricao;
   final String autor;
+  final String codigoQR;
 
   Projeto({
     required this.id,
     required this.nome,
     required this.descricao,
     required this.autor,
+    required this.codigoQR,
   });
 
   Map<String, dynamic> toJson() {
@@ -65,6 +67,7 @@ class Projeto {
       'nome': nome,
       'descricao': descricao,
       'autor': autor,
+      'codigoQR': codigoQR,
     };
   }
 
@@ -74,6 +77,7 @@ class Projeto {
       nome: json['nome'],
       descricao: json['descricao'],
       autor: json['autor'],
+      codigoQR: json['codigoQR'],
     );
   }
 }

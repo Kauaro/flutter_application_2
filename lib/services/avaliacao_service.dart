@@ -5,31 +5,63 @@ import '../models/avaliacao.dart';
 class AvaliacaoService {
   static const String _storageKey = 'avaliacoes';
   
-  // Simular projetos disponíveis
+  // Projetos mockados com códigos QR
   static final List<Projeto> _projetos = [
     Projeto(
-      id: 'proj001',
+      id: 'TCC001',
       nome: 'Sistema de Gestão Escolar',
       descricao: 'Aplicativo para gerenciar notas, frequência e comunicação entre escola e pais.',
       autor: 'João Silva',
+      codigoQR: '00001',
     ),
     Projeto(
-      id: 'proj002',
+      id: 'TCC002',
       nome: 'App de Delivery Sustentável',
       descricao: 'Plataforma que conecta restaurantes com entregadores usando veículos elétricos.',
       autor: 'Maria Santos',
+      codigoQR: '00002',
     ),
     Projeto(
-      id: 'proj003',
+      id: 'TCC003',
       nome: 'Monitoramento de Saúde IoT',
       descricao: 'Sistema de sensores para monitorar sinais vitais em tempo real.',
       autor: 'Pedro Costa',
+      codigoQR: '00003',
     ),
     Projeto(
-      id: 'proj004',
+      id: 'TCC004',
       nome: 'Rede Social para Estudantes',
       descricao: 'Plataforma para compartilhamento de conhecimento e colaboração acadêmica.',
       autor: 'Ana Oliveira',
+      codigoQR: '00004',
+    ),
+    Projeto(
+      id: 'TCC005',
+      nome: 'E-commerce Inteligente',
+      descricao: 'Sistema de vendas online com IA para recomendações personalizadas.',
+      autor: 'Carlos Mendes',
+      codigoQR: 'QR_TCC005_ECOMMERCE_IA',
+    ),
+    Projeto(
+      id: 'TCC006',
+      nome: 'App de Controle Financeiro',
+      descricao: 'Aplicativo para gestão de finanças pessoais com análise de gastos.',
+      autor: 'Fernanda Lima',
+      codigoQR: 'QR_TCC006_FINANCAS_PESSOAIS',
+    ),
+    Projeto(
+      id: 'TCC007',
+      nome: 'Sistema de Biblioteca Digital',
+      descricao: 'Plataforma para empréstimo e leitura de livros digitais.',
+      autor: 'Roberto Alves',
+      codigoQR: 'QR_TCC007_BIBLIOTECA_DIGITAL',
+    ),
+    Projeto(
+      id: 'TCC008',
+      nome: 'App de Carona Solidária',
+      descricao: 'Sistema para compartilhamento de caronas entre universitários.',
+      autor: 'Juliana Rocha',
+      codigoQR: 'QR_TCC008_CARONA_SOLIDARIA',
     ),
   ];
 
@@ -111,13 +143,22 @@ class AvaliacaoService {
     return DateTime.now().millisecondsSinceEpoch.toString();
   }
 
-  // Calcular média das notas de um projeto
-  static Future<double> getMediaNotasProjeto(String projetoId) async {
+  // Obter projeto por código QR
+  static Projeto? getProjetoPorCodigoQR(String codigoQR) {
+    try {
+      return _projetos.firstWhere((projeto) => projeto.codigoQR == codigoQR);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Calcular média das estrelas de um projeto
+  static Future<double> getMediaEstrelasProjeto(String projetoId) async {
     final avaliacoes = await getAvaliacoesPorProjeto(projetoId);
     
     if (avaliacoes.isEmpty) return 0.0;
     
-    final soma = avaliacoes.fold(0, (sum, a) => sum + a.nota);
+    final soma = avaliacoes.fold(0, (sum, a) => sum + a.estrelas);
     return soma / avaliacoes.length;
   }
 }

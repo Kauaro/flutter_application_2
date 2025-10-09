@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class RedesSociaisPage extends StatelessWidget {
   const RedesSociaisPage({super.key});
@@ -132,11 +133,16 @@ class RedesSociaisPage extends StatelessWidget {
                     _buildCard(
                       icon: Icons.location_on,
                       title: 'Localização',
-                      subtitle: 'Bela Vista, Salvador - BA',
+                      subtitle: 'R. Interna Grupo Bandeirante, 138 - Jardim Belval, Barueri - SP, 06420-150',
                       gradient: const LinearGradient(
                         colors: [Color(0xFF4285F4), Color(0xFF34A853)],
                       ),
-                      onTap: () => HapticFeedback.lightImpact(),
+                      onTap: () async {
+                        final url = 'https://www.google.com/maps/search/?api=1&query=R.+Interna+Grupo+Bandeirante,+138+-+Jardim+Belval,+Barueri+-+SP,+06420-150';
+                        if (await canLaunchUrl(Uri.parse(url))) {
+                          await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                        }
+                      },
                     ),
                   ],
                 ),

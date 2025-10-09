@@ -54,9 +54,9 @@ class _HistoricoPageState extends State<HistoricoPage> {
     return '${data.day.toString().padLeft(2, '0')}/${data.month.toString().padLeft(2, '0')}/${data.year}';
   }
 
-  Color _getNotaColor(int nota) {
-    if (nota >= 8) return Colors.green;
-    if (nota >= 6) return Colors.orange;
+  Color _getNotaColor(int estrelas) {
+    if (estrelas >= 4) return Colors.green;
+    if (estrelas >= 3) return Colors.orange;
     return Colors.red;
   }
 
@@ -202,11 +202,11 @@ class _HistoricoPageState extends State<HistoricoPage> {
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: _getNotaColor(avaliacao.nota),
+                              color: _getNotaColor(avaliacao.estrelas),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
-                              '${avaliacao.nota}/10',
+                              '${avaliacao.estrelas}/5',
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -239,12 +239,12 @@ class _HistoricoPageState extends State<HistoricoPage> {
                       ),
 
                       // Feedback (se houver)
-                      if (avaliacao.feedback.isNotEmpty) ...[
+                      if (avaliacao.descricao.isNotEmpty) ...[
                         const SizedBox(height: 12),
                         const Divider(),
                         const SizedBox(height: 8),
                         const Text(
-                          'Feedback:',
+                          'Descrição:',
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
@@ -253,7 +253,7 @@ class _HistoricoPageState extends State<HistoricoPage> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          avaliacao.feedback,
+                          avaliacao.descricao,
                           style: const TextStyle(
                             fontSize: 14,
                             color: Colors.black87,

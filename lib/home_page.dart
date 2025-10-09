@@ -17,7 +17,7 @@ class _HomePageState extends State<HomePage> {
   final List<Map<String, dynamic>> campaigns = [
     {
       'title': 'NO TO RACISM',
-      'image': 'imagens/nao_racismo.jpg',
+      'image': 'imagens/sla1.jpg',
       'backgroundColor': const Color(0xFFF5F5DC), // Bege claro
       'textColor': Colors.black,
       'topText': '',
@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
     },
     {
       'title': 'STOP HOMOPHOBIA',
-      'image': 'imagens/nao_homofobia.jpg',
+      'image': 'imagens/sla3.jpg',
       'backgroundColor': Colors.transparent, // Bandeira do arco-íris
       'textColor': Colors.white,
       'topText': '',
@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
     },
     {
       'title': 'STOP FEMINICIDE',
-      'image': 'imagens/nao_femicidio.webp',
+      'image': 'imagens/sla4.jpg',
       'backgroundColor': const Color(0xFF8B0000), // Vermelho escuro
       'textColor': Colors.white,
       'topText': '',
@@ -176,14 +176,14 @@ class _HomePageState extends State<HomePage> {
                             decoration: BoxDecoration(
                               color: campaign['backgroundColor'],
                               borderRadius: BorderRadius.circular(16),
-                              image: campaign['image'] == 'nao_homofobia.jpg' 
+                              image: campaign['image'] == 'sla1.jpg' 
                                 ? const DecorationImage(
-                                    image: AssetImage('nao_homofobia.jpg'),
+                                    image: AssetImage('sla1.jpg'),
                                     fit: BoxFit.cover,
                                   )
                                 : null,
                             ),
-                            child: campaign['image'] == 'nao_homofobia.jpg'
+                            child: campaign['image'] == 'sla1.jpg'
                               ? _buildRainbowOverlay(campaign)
                               : _buildCampaignCard(campaign),
                           );
@@ -230,7 +230,7 @@ class _HomePageState extends State<HomePage> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
-                          () => Navigator.pushNamed(context, '/codigo'),
+                          () => Navigator.pushNamed(context, '/projetos-avaliados'),
                         ),
                         _buildModernDashboardCard(
                           'Redes\nSociais',
@@ -250,7 +250,7 @@ class _HomePageState extends State<HomePage> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
-                          () => Navigator.pushNamed(context, '/galeria'),
+                          () => Navigator.pushNamed(context, '/gallery'),
                         ),
                         _buildModernDashboardCard(
                           'Meu\nPerfil',
@@ -260,7 +260,7 @@ class _HomePageState extends State<HomePage> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
-                          () => Navigator.pushNamed(context, '/login'),
+                          () => Navigator.pushNamed(context, '/meu-perfil'),
                         ),
                       ],
                     ),
