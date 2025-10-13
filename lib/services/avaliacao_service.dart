@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 import '../models/avaliacao.dart';
 
 class AvaliacaoService {
@@ -160,5 +161,56 @@ class AvaliacaoService {
     
     final soma = avaliacoes.fold(0, (sum, a) => sum + a.estrelas);
     return soma / avaliacoes.length;
+  }
+
+  /// Busca projeto por código via GET
+  /// [codigo] é o código do projeto
+  /// Retorna os dados do projeto ou lança uma Exception em caso de erro
+  static Future<Map<String, dynamic>> buscarProjetoPorCodigo(String codigo) async {
+    final url = Uri.parse('https://productclienthub-ld2x.onrender.com/api/Projeto/codigo/$codigo');
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      } else if (response.statusCode == 404) {
+        throw Exception('Projeto não encontrado');
+      } else {
+        throw Exception('Erro no servidor: ${response.statusCode}');
+      }
+    } catch (e) {
+      if (e.toString().contains('Projeto não encontrado')) {
+        rethrow;
+      }
+      throw Exception('Falha na conexão: Verifique sua internet');
+    }
+  }
+
+  /// Cria avaliação via POST
+  /// [projetoCodigo] é o código do projeto
+  /// [dadosAvaliacao] são os dados da avaliação
+  /// Retorna os dados da avaliação criada ou lança uma Exception em caso de erro
+  static Future<Map<String, dynamic>> criarAvaliacao(String projetoCodigo, Map<String, dynamic> dadosAvaliacao) async {
+    final url = Uri.parse('https://productclienthub-ld2x.onrender.com/api/Avaliacao/$projetoCodigo');
+    try {
+      print('Enviando para: $url');
+      print('Dados: ${jsonEncode(dadosAvaliacao)}');
+      
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(dadosAvaliacao),
+      );
+      
+      print('Status: ${response.statusCode}');
+      print('Resposta: ${response.body}');
+      
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      } else {
+        throw Exception('Erro ${response.statusCode}: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Falha na requisição: $e');
+    }
   }
 }

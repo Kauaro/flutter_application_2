@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
+import 'widgets/login_button.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,6 +15,7 @@ class _HomePageState extends State<HomePage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
   Timer? _timer;
+  bool _isLoggedIn = false;
 
   final List<Map<String, dynamic>> campaigns = [
     {
@@ -44,6 +47,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    _checkLoginStatus();
     // Configurar status bar
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
@@ -54,6 +58,22 @@ class _HomePageState extends State<HomePage> {
     
     // Iniciar carrossel automático
     _startAutoSlide();
+  }
+
+  Future<void> _checkLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final matricula = prefs.getString('user_matricula');
+    setState(() {
+      _isLoggedIn = matricula != null;
+    });
+  }
+
+  void _handleCardTap(String route) {
+    if (!_isLoggedIn && (route == '/projetos-avaliados' || route == '/meu-perfil')) {
+      Navigator.pushNamed(context, '/login');
+    } else {
+      Navigator.pushNamed(context, route);
+    }
   }
   
   void _startAutoSlide() {
@@ -92,7 +112,7 @@ class _HomePageState extends State<HomePage> {
                   // Logo
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushReplacementNamed(context, '/');
+                      Navigator.pushReplacementNamed(context, '/home');
                     },
                     child: Image.asset(
                       'imagens/LOGO.png',
@@ -101,50 +121,8 @@ class _HomePageState extends State<HomePage> {
                       fit: BoxFit.contain,
                     ),
                   ),
-                  // Botão de login modernizado
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, '/login');
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF9C6ADE), Color(0xFF6A1B9A)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF9C6ADE).withOpacity(0.3),
-                            spreadRadius: 0,
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.person,
-                            size: 20,
-                            color: Colors.white,
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            'Login',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  // Botão de login/perfil
+                  const LoginButton(),
                 ],
               ),
             ),
@@ -230,7 +208,7 @@ class _HomePageState extends State<HomePage> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
-                          () => Navigator.pushNamed(context, '/projetos-avaliados'),
+                          () => _handleCardTap('/projetos-avaliados'),
                         ),
                         _buildModernDashboardCard(
                           'Redes\nSociais',
@@ -240,7 +218,7 @@ class _HomePageState extends State<HomePage> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
-                          () => Navigator.pushNamed(context, '/redes-sociais'),
+                          () => _handleCardTap('/redes-sociais'),
                         ),
                         _buildModernDashboardCard(
                           'Galeria\nda SLA',
@@ -250,7 +228,7 @@ class _HomePageState extends State<HomePage> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
-                          () => Navigator.pushNamed(context, '/gallery'),
+                          () => _handleCardTap('/gallery'),
                         ),
                         _buildModernDashboardCard(
                           'Meu\nPerfil',
@@ -260,7 +238,7 @@ class _HomePageState extends State<HomePage> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
-                          () => Navigator.pushNamed(context, '/meu-perfil'),
+                          () => _handleCardTap('/meu-perfil'),
                         ),
                       ],
                     ),
@@ -291,7 +269,11 @@ class _HomePageState extends State<HomePage> {
         ),
         child: FloatingActionButton(
           onPressed: () {
-            Navigator.pushNamed(context, '/codigo');
+            if (!_isLoggedIn) {
+              Navigator.pushNamed(context, '/login');
+            } else {
+              Navigator.pushNamed(context, '/codigo');
+            }
           },
           backgroundColor: Colors.transparent,
           elevation: 0,

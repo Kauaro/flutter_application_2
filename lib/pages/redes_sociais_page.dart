@@ -19,7 +19,7 @@ class RedesSociaisPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
-                    onTap: () => Navigator.pushReplacementNamed(context, '/'),
+                    onTap: () => Navigator.pushReplacementNamed(context, '/home'),
                     child: Image.asset(
                       'imagens/LOGO.png',
                       color: const Color(0xFF6A1B9A),

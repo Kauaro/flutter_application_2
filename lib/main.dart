@@ -5,7 +5,7 @@ import 'register_page.dart';
 import 'intro_page.dart';
 import 'user_type_page.dart';
 import 'pages/galeria_page.dart';
-import 'meu_perfil_page.dart';
+import 'pages/meu_perfil_page.dart';
 import 'projetos_avaliados_page.dart';
 import 'pages/qr_scanner_page.dart';
 import 'pages/avaliacao_page.dart';

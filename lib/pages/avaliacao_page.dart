@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/avaliacao.dart';
 import '../services/avaliacao_service.dart';
 
 class AvaliacaoPage extends StatefulWidget {
   final String? codigoQR;
+  final Map<String, dynamic>? projeto;
   
-  const AvaliacaoPage({super.key, this.codigoQR});
+  const AvaliacaoPage({super.key, this.codigoQR, this.projeto});
 
   @override
   State<AvaliacaoPage> createState() => _AvaliacaoPageState();
@@ -23,8 +25,28 @@ class _AvaliacaoPageState extends State<AvaliacaoPage> {
   @override
   void initState() {
     super.initState();
-    if (widget.codigoQR != null) {
-      _projeto = AvaliacaoService.getProjetoPorCodigoQR(widget.codigoQR!);
+    _carregarDadosUsuario();
+    if (widget.projeto != null) {
+      _projeto = Projeto(
+        id: widget.projeto!['id']?.toString() ?? '',
+        nome: widget.projeto!['nome'] ?? 'Projeto sem nome',
+        autor: widget.projeto!['usuarioNome'] ?? 'Autor desconhecido',
+        descricao: widget.projeto!['descricao'] ?? '',
+        codigoQR: widget.codigoQR ?? '',
+      );
+    }
+  }
+
+  Future<void> _carregarDadosUsuario() async {
+    final prefs = await SharedPreferences.getInstance();
+    final matricula = prefs.getString('user_matricula');
+    final nome = prefs.getString('user_nome');
+    
+    if (matricula != null && nome != null) {
+      setState(() {
+        _matriculaController.text = matricula;
+        _nomeController.text = nome;
+      });
     }
   }
 
@@ -100,44 +122,29 @@ class _AvaliacaoPageState extends State<AvaliacaoPage> {
     });
 
     try {
-      final avaliacao = Avaliacao(
-        id: AvaliacaoService.gerarId(),
-        matricula: _matriculaController.text,
-        nome: _nomeController.text,
-        descricao: _descricaoController.text,
-        estrelas: _estrelas,
-        projetoId: _projeto!.id,
-        projetoNome: _projeto!.nome,
-        dataAvaliacao: DateTime.now(),
-      );
+      final dadosAvaliacao = {
+        'nome': _nomeController.text,
+        'alunoMatricula': _matriculaController.text,
+        'descricao': _descricaoController.text,
+        'nota': _estrelas,
+      };
 
-      final sucesso = await AvaliacaoService.salvarAvaliacao(avaliacao);
+      await AvaliacaoService.criarAvaliacao(widget.codigoQR!, dadosAvaliacao);
 
       if (mounted) {
         setState(() {
           _isLoading = false;
         });
 
-        if (sucesso) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text('Avaliação enviada com sucesso!'),
-              backgroundColor: const Color(0xFF6A1B9A),
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-          );
-          Navigator.pushReplacementNamed(context, '/home');
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text('Erro ao salvar avaliação'),
-              backgroundColor: Colors.red,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-          );
-        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Avaliação enviada com sucesso!'),
+            backgroundColor: const Color(0xFF6A1B9A),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+        Navigator.pushReplacementNamed(context, '/home');
       }
     } catch (e) {
       if (mounted) {
@@ -146,7 +153,7 @@ class _AvaliacaoPageState extends State<AvaliacaoPage> {
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Erro ao processar avaliação'),
+            content: Text(e.toString().replaceFirst('Exception: ', '')),
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -390,21 +397,89 @@ class _AvaliacaoPageState extends State<AvaliacaoPage> {
                             key: _formKey,
                             child: Column(
                               children: [
-                                // Campo Nome
-                                _buildModernTextField(
-                                  controller: _nomeController,
-                                  label: 'Nome Completo',
-                                  validator: _validateNome,
-                                  icon: Icons.person_outline,
+                                // Campo Nome (somente leitura)
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[100],
+                                    borderRadius: BorderRadius.circular(16),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(0xFF9C6ADE).withOpacity(0.1),
+                                        spreadRadius: 0,
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: TextFormField(
+                                    controller: _nomeController,
+                                    readOnly: true,
+                                    style: const TextStyle(fontSize: 16, color: Colors.grey),
+                                    decoration: InputDecoration(
+                                      labelText: 'Nome Completo',
+                                      labelStyle: const TextStyle(
+                                        color: Colors.grey,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      prefixIcon: const Icon(
+                                        Icons.person_outline,
+                                        color: Colors.grey,
+                                      ),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      filled: true,
+                                      fillColor: Colors.grey[100],
+                                      contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 20,
+                                        vertical: 20,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                                 const SizedBox(height: 20),
                                 
-                                // Campo Matrícula
-                                _buildModernTextField(
-                                  controller: _matriculaController,
-                                  label: 'Matrícula',
-                                  validator: _validateMatricula,
-                                  icon: Icons.badge_outlined,
+                                // Campo Matrícula (somente leitura)
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[100],
+                                    borderRadius: BorderRadius.circular(16),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(0xFF9C6ADE).withOpacity(0.1),
+                                        spreadRadius: 0,
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: TextFormField(
+                                    controller: _matriculaController,
+                                    readOnly: true,
+                                    style: const TextStyle(fontSize: 16, color: Colors.grey),
+                                    decoration: InputDecoration(
+                                      labelText: 'Matrícula',
+                                      labelStyle: const TextStyle(
+                                        color: Colors.grey,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      prefixIcon: const Icon(
+                                        Icons.badge_outlined,
+                                        color: Colors.grey,
+                                      ),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      filled: true,
+                                      fillColor: Colors.grey[100],
+                                      contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 20,
+                                        vertical: 20,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                                 const SizedBox(height: 20),
                                 
