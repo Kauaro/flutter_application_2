@@ -45,38 +45,42 @@ class _LoginPageState extends State<LoginPage> {
       _isLoading = true;
     });
 
-    await Future.delayed(const Duration(seconds: 1));
+    try {
+      final usuario = await LoginService.login(
+        _matriculaController.text,
+        _senhaController.text,
+      );
 
-    final usuario = LoginService.autenticar(
-      _matriculaController.text,
-      _senhaController.text,
-    );
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
 
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
-
-      if (usuario != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Bem-vindo, ${usuario['nome']}!'),
+            content: Text('Bem-vindo, ${usuario?['nome'] ?? 'Usuário'}!'),
             backgroundColor: const Color(0xFF4CAF50),
           ),
         );
         
         Navigator.pushReplacementNamed(
           context,
-          '/historico',
+          '/home',
           arguments: {
-            'matricula': usuario['matricula'],
-            'nome': usuario['nome'],
+            'matricula': usuario?['matricula'] ?? _matriculaController.text,
+            'nome': usuario?['nome'] ?? 'Usuário',
           },
         );
-      } else {
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Matrícula ou senha incorretos'),
+          SnackBar(
+            content: Text(e.toString().replaceFirst('Exception: ', '')),
             backgroundColor: Colors.red,
           ),
         );

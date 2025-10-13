@@ -31,6 +31,20 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       initialRoute: '/',
+      onGenerateRoute: (settings) {
+        final uri = Uri.parse(settings.name!);
+        
+        // Rota para avaliação com código na URL
+        if (uri.pathSegments.length == 2 && uri.pathSegments[0] == 'avaliacao') {
+          final codigoQR = uri.pathSegments[1];
+          return MaterialPageRoute(
+            builder: (context) => AvaliacaoPage(codigoQR: codigoQR),
+            settings: settings,
+          );
+        }
+        
+        return null;
+      },
       routes: {
         '/': (context) => const IntroPage(),
         '/user-type': (context) => const UserTypePage(),

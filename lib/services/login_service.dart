@@ -36,6 +36,27 @@ class LoginService {
     return null;
   }
 
+  static Future<Map<String, dynamic>?> login(String matricula, String senha) async {
+    final url = Uri.parse('https://productclienthub-ld2x.onrender.com/api/Aluno/login');
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'matricula': matricula,
+          'senha': senha,
+        }),
+      );
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      } else {
+        throw Exception('Credenciais inválidas');
+      }
+    } catch (e) {
+      throw Exception('Erro na autenticação: $e');
+    }
+  }
+
   static List<Map<String, String>> obterTodosUsuarios() {
     return _usuarios.entries.map((entry) => {
       'matricula': entry.key,
@@ -47,7 +68,7 @@ class LoginService {
   /// [data] deve ser um Map com os dados do aluno
   /// Retorna o corpo da resposta ou lança uma Exception em caso de erro
   static Future<Map<String, dynamic>> cadastrarAluno(Map<String, dynamic> data) async {
-    final url = Uri.parse('http://localhost:8080/api/Aluno');
+    final url = Uri.parse('https://productclienthub-ld2x.onrender.com/api/Aluno');
     try {
       final response = await http.post(
         url,

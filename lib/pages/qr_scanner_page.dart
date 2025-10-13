@@ -33,32 +33,16 @@ class _QRScannerPageState extends State<QRScannerPage> {
     });
 
     try {
-      // Simular processamento
       await Future.delayed(const Duration(milliseconds: 500));
-
+      
       final codigoQR = _qrCodeController.text.trim();
       
-      // Verificar se o código QR corresponde a um projeto válido
-      final projeto = AvaliacaoService.getProjetoPorCodigoQR(codigoQR);
-
-      if (projeto != null) {
-        // Navegar para a página de avaliação com o código QR
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AvaliacaoPage(codigoQR: codigoQR),
-            ),
-          );
-        }
-      } else {
-        // QR code inválido
-        if (mounted) {
-          _showErrorDialog(
-            'Código inválido',
-            'O código "$codigoQR" não corresponde a um projeto válido.\n\nCódigos válidos: QR_TCC001_GESTAO_ESCOLAR, QR_TCC002_DELIVERY_VERDE, etc.',
-          );
-        }
+      // Navegar para a página de avaliação com o código na URL
+      if (mounted) {
+        Navigator.pushReplacementNamed(
+          context,
+          '/avaliacao/$codigoQR',
+        );
       }
     } catch (e) {
       if (mounted) {
