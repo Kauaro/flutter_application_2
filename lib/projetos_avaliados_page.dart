@@ -1,53 +1,71 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'detalhes_avaliacao_page.dart';
 
-class ProjetosAvaliadosPage extends StatelessWidget {
+class ProjetosAvaliadosPage extends StatefulWidget {
   const ProjetosAvaliadosPage({super.key});
 
-  final List<Map<String, dynamic>> projetosAvaliados = const [
-    {
-      'nome': 'Sistema de Gestão Escolar',
-      'responsavel': 'João Silva',
-      'avaliacao': 5,
-      'dataAvaliacao': '15/12/2024',
-      'tema': 'Educação',
-    },
-    {
-      'nome': 'App de Delivery Sustentável',
-      'responsavel': 'Maria Santos',
-      'avaliacao': 4,
-      'dataAvaliacao': '14/12/2024',
-      'tema': 'Sustentabilidade',
-    },
-    {
-      'nome': 'Monitoramento de Saúde IoT',
-      'responsavel': 'Pedro Costa',
-      'avaliacao': 5,
-      'dataAvaliacao': '13/12/2024',
-      'tema': 'Saúde',
-    },
-    {
-      'nome': 'Rede Social para Estudantes',
-      'responsavel': 'Ana Oliveira',
-      'avaliacao': 3,
-      'dataAvaliacao': '12/12/2024',
-      'tema': 'Social',
-    },
-    {
-      'nome': 'E-commerce Inteligente',
-      'responsavel': 'Carlos Mendes',
-      'avaliacao': 4,
-      'dataAvaliacao': '11/12/2024',
-      'tema': 'Comércio',
-    },
-    {
-      'nome': 'App de Controle Financeiro',
-      'responsavel': 'Fernanda Lima',
-      'avaliacao': 5,
-      'dataAvaliacao': '10/12/2024',
-      'tema': 'Finanças',
-    },
-  ];
+  @override
+  State<ProjetosAvaliadosPage> createState() => _ProjetosAvaliadosPageState();
+}
+
+class _ProjetosAvaliadosPageState extends State<ProjetosAvaliadosPage> {
+  List<Map<String, dynamic>> projetosAvaliados = [];
+  bool isLoading = true;
+  String? errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _carregarAvaliacoes();
+  }
+
+  Future<void> _carregarAvaliacoes() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final matricula = prefs.getString('user_matricula');
+      
+      if (matricula == null) {
+        setState(() {
+          errorMessage = 'Usuário não logado';
+          isLoading = false;
+        });
+        return;
+      }
+
+      final url = Uri.parse('https://productclienthub-ld2x.onrender.com/api/Avaliacao/matricula/$matricula');
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        setState(() {
+          projetosAvaliados = data.map((item) => {
+            'nome': item['projetoNome'] ?? 'Projeto sem nome',
+            'responsavel': 'Autor não informado',
+            'avaliacao': item['nota'] ?? 0,
+            'dataAvaliacao': 'Data não informada',
+            'tema': 'Geral',
+            'feedback': item['descricao'] ?? '',
+          }).toList().cast<Map<String, dynamic>>();
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          errorMessage = 'Erro ao carregar avaliações';
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        errorMessage = 'Erro de conexão';
+        isLoading = false;
+      });
+    }
+  }
+
+
 
   Widget _buildStarRating(int avaliacao) {
     return Row(
@@ -194,127 +212,147 @@ class ProjetosAvaliadosPage extends StatelessWidget {
                           ),
                           const SizedBox(height: 32),
                           
-                          // Lista de projetos
-                          Column(
-                            children: projetosAvaliados.map((projeto) {
-                              return GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => DetalhesAvaliacaoPage(projeto: projeto),
+                          // Conteúdo baseado no estado
+                          if (isLoading)
+                            const CircularProgressIndicator(color: Color(0xFF6A1B9A))
+                          else if (errorMessage != null)
+                            Text(
+                              errorMessage!,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 16,
+                              ),
+                            )
+                          else if (projetosAvaliados.isEmpty)
+                            const Text(
+                              'Nenhuma avaliação encontrada',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Color(0xFF718096),
+                              ),
+                            )
+                          else
+                            // Lista de projetos
+                            Column(
+                              children: projetosAvaliados.map((projeto) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => DetalhesAvaliacaoPage(projeto: projeto),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(bottom: 16),
+                                    padding: const EdgeInsets.all(20),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFF7FAFC),
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(
+                                        color: const Color(0xFFE2E8F0),
+                                        width: 1,
+                                      ),
                                     ),
-                                  );
-                                },
-                                child: Container(
-                                  margin: const EdgeInsets.only(bottom: 16),
-                                  padding: const EdgeInsets.all(20),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFF7FAFC),
-                                    borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(
-                                      color: const Color(0xFFE2E8F0),
-                                      width: 1,
-                                    ),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      // Header do projeto
-                                      Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  projeto['nome'],
-                                                  style: const TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Color(0xFF2D3748),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        // Header do projeto
+                                        Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    projeto['nome'],
+                                                    style: const TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight: FontWeight.bold,
+                                                      color: Color(0xFF2D3748),
+                                                    ),
                                                   ),
+                                                  const SizedBox(height: 4),
+                                                  Text(
+                                                    'Responsável - ${projeto['responsavel']}',
+                                                    style: const TextStyle(
+                                                      fontSize: 14,
+                                                      color: Color(0xFF718096),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: 12,
+                                                vertical: 6,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: _getCategoryColor(projeto['tema']).withOpacity(0.1),
+                                                borderRadius: BorderRadius.circular(20),
+                                              ),
+                                              child: Text(
+                                                projeto['tema'],
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: _getCategoryColor(projeto['tema']),
                                                 ),
-                                                const SizedBox(height: 4),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 16),
+                                        
+                                        // Avaliação e data
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            // Estrelas
+                                            Row(
+                                              children: [
+                                                _buildStarRating(projeto['avaliacao']),
+                                                const SizedBox(width: 8),
                                                 Text(
-                                                  'Responsável - ${projeto['responsavel']}',
+                                                  '${projeto['avaliacao']}/5',
                                                   style: const TextStyle(
                                                     fontSize: 14,
-                                                    color: Color(0xFF718096),
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Color(0xFF6A1B9A),
                                                   ),
                                                 ),
                                               ],
                                             ),
-                                          ),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 12,
-                                              vertical: 6,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: _getCategoryColor(projeto['tema']).withOpacity(0.1),
-                                              borderRadius: BorderRadius.circular(20),
-                                            ),
-                                            child: Text(
-                                              projeto['tema'],
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.bold,
-                                                color: _getCategoryColor(projeto['tema']),
+                                            
+                                            // Data
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: 8,
+                                                vertical: 4,
                                               ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 16),
-                                      
-                                      // Avaliação e data
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          // Estrelas
-                                          Row(
-                                            children: [
-                                              _buildStarRating(projeto['avaliacao']),
-                                              const SizedBox(width: 8),
-                                              Text(
-                                                '${projeto['avaliacao']}/5',
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius: BorderRadius.circular(8),
+                                              ),
+                                              child: Text(
+                                                projeto['dataAvaliacao'],
                                                 style: const TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Color(0xFF6A1B9A),
+                                                  fontSize: 12,
+                                                  color: Color(0xFF718096),
                                                 ),
                                               ),
-                                            ],
-                                          ),
-                                          
-                                          // Data
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 4,
                                             ),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius: BorderRadius.circular(8),
-                                            ),
-                                            child: Text(
-                                              projeto['dataAvaliacao'],
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                                color: Color(0xFF718096),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              );
-                            }).toList(),
-                          ),
+                                );
+                              }).toList(),
+                            ),
                         ],
                       ),
                     ),

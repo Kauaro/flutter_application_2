@@ -156,6 +156,27 @@ class DetalhesAvaliacaoPage extends StatelessWidget {
                         'Data da avaliação: ${projeto['dataAvaliacao']}',
                         style: const TextStyle(fontSize: 16, color: Color(0xFF718096)),
                       ),
+                      if (projeto['feedback'] != null && projeto['feedback'].toString().isNotEmpty)
+                        const SizedBox(height: 24),
+                      if (projeto['feedback'] != null && projeto['feedback'].toString().isNotEmpty)
+                        const Text(
+                          'Descrição:',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF2D3748),
+                          ),
+                        ),
+                      if (projeto['feedback'] != null && projeto['feedback'].toString().isNotEmpty)
+                        const SizedBox(height: 8),
+                      if (projeto['feedback'] != null && projeto['feedback'].toString().isNotEmpty)
+                        Text(
+                          projeto['feedback'],
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF718096),
+                          ),
+                        ),
                     ],
                   ),
                 ),
