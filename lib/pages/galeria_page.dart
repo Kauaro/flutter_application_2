@@ -6,34 +6,34 @@ class GaleriaPage extends StatelessWidget {
 
   final List<Map<String, String>> _imagens = const [
     {
-      'titulo': 'Laboratório de Informática',
-      'descricao': 'Ambiente moderno para desenvolvimento',
-      'imagem': 'imagens/lab_info.jpg',
+      'titulo': 'A Cultura do Funk',
+      'descricao': 'Projeto feito por alunos.',
+      'imagem': 'imagens/favela.jpeg',
     },
     {
-      'titulo': 'Sala de Aula',
-      'descricao': 'Espaços equipados para aprendizado',
-      'imagem': 'imagens/sala_aula.jpg',
+      'titulo': 'A Censura da Ditadura',
+      'descricao': 'Projeto feito por alunos.',
+      'imagem': 'imagens/ditadura.jpeg',
     },
     {
-      'titulo': 'Biblioteca',
-      'descricao': 'Acervo técnico e científico',
-      'imagem': 'imagens/biblioteca.jpg',
+      'titulo': 'Feminicídio',
+      'descricao': 'Projeto feito por alunos.',
+      'imagem': 'imagens/feminicidio.jpeg',
     },
     {
-      'titulo': 'Pátio Central',
-      'descricao': 'Área de convivência dos estudantes',
-      'imagem': 'imagens/patio.jpg',
+      'titulo': 'Cultura da Música Brasileira',
+      'descricao': 'Projeto feito por alunos.',
+      'imagem': 'imagens/musica.jpeg',
     },
     {
-      'titulo': 'Auditório',
-      'descricao': 'Espaço para eventos e apresentações',
-      'imagem': 'imagens/auditorio.jpg',
+      'titulo': 'Racionais',
+      'descricao': 'Projeto feito por alunos.',
+      'imagem': 'imagens/racionais.jpeg',
     },
     {
-      'titulo': 'Quadra Esportiva',
-      'descricao': 'Atividades físicas e recreativas',
-      'imagem': 'imagens/quadra.jpg',
+      'titulo': 'Desigualdade Social',
+      'descricao': 'Palestra de professores.',
+      'imagem': 'imagens/palestra.jpeg',
     },
   ];
 
@@ -80,8 +80,6 @@ class GaleriaPage extends StatelessWidget {
                 ],
               ),
             ),
-
-
 
             // Conteúdo com scroll
             Expanded(
@@ -175,22 +173,30 @@ class GaleriaPage extends StatelessWidget {
           children: [
             Expanded(
               flex: 3,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                  gradient: LinearGradient(
-                    colors: [
-                      const Color(0xFF9C6ADE).withOpacity(0.3),
-                      const Color(0xFF6A1B9A).withOpacity(0.5),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: const Icon(
-                  Icons.image,
-                  size: 60,
-                  color: Colors.white,
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                child: Image.asset(
+                  item['imagem']!,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            const Color(0xFF9C6ADE).withOpacity(0.3),
+                            const Color(0xFF6A1B9A).withOpacity(0.5),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.image,
+                        size: 60,
+                        color: Colors.white,
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
@@ -248,22 +254,31 @@ class GaleriaPage extends StatelessWidget {
               children: [
                 Container(
                   height: 300,
-                  decoration: BoxDecoration(
+                  child: ClipRRect(
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                    gradient: LinearGradient(
-                      colors: [
-                        const Color(0xFF9C6ADE).withOpacity(0.3),
-                        const Color(0xFF6A1B9A).withOpacity(0.5),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.image,
-                      size: 100,
-                      color: Colors.white,
+                    child: Image.asset(
+                      item['imagem']!,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                const Color(0xFF9C6ADE).withOpacity(0.3),
+                                const Color(0xFF6A1B9A).withOpacity(0.5),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.image,
+                            size: 60,
+                            color: Colors.white,
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),
